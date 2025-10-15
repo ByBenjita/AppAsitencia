@@ -24,7 +24,7 @@ import androidx.compose.runtime.setValue
 
 
 @Composable
-fun IniciarSesionScreen(
+fun LoginScreen(
     onLogin: () -> Unit,    // Cuando el login es exitoso
     onBack: () -> Unit     // Para volver atrás
 ) {
