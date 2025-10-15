@@ -5,33 +5,34 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.appasistencia.ui.screen.InicioAppScreen
-import com.example.appasistencia.ui.screen.IniciarSesionScreen
+import com.example.appasistencia.ui.screen.LoginScreen
+
 
 
 @Composable
 fun NavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
-        startDestination = "inicio"
+        startDestination = Routes.Inicio.route
     ) {
-        composable("inicio") {
+        composable(Routes.Inicio.route) {
             InicioAppScreen(
                 onGoToLogin = {
-                    navController.navigate("login")
+                    navController.navigate(Routes.Login.route)
                 },
                 onGoToInicio = {
-                navController.navigate("IniciarSesion")
+                navController.navigate(Routes.Inicio.route)
                 }
             )
         }
-        composable("login") {
-            IniciarSesionScreen(
-                onLogin = {
-                },
-                onBack = {
-                    navController.popBackStack()// Volver a la pantalla de inicio
-                }
-            )
+        composable(Routes.Login.route) {
+            LoginScreen(
+                 onLogin = {
+                 },
+                 onBack = {
+                     navController.popBackStack()// Volver atras
+                 }
+             )
         }
     }
 }
