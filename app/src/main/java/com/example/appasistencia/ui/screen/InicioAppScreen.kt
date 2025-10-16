@@ -18,8 +18,9 @@ import androidx.compose.ui.unit.sp
 
 
 @Composable
-fun InicioApp(
-    onGoLogin: () -> Unit,   // Acción a Login
+fun InicioAppScreen(
+    onGoToLogin: () -> Unit,// Acción a Login
+    onGoToInicio: () -> Unit //Acción a Inicio
 ) {
 
 
@@ -53,7 +54,7 @@ fun InicioApp(
 
             (
               Button(
-                  onClick = onGoLogin,
+                  onClick = onGoToLogin,
                   modifier = Modifier
                       .padding(top = 100.dp)// separacion del boton iniciiar secion
                       .width(250.dp) // ancho boton
@@ -66,11 +67,6 @@ fun InicioApp(
         }
     }
 }
-
-
-
-
-
 
 @Composable
 fun Greeting(name: String, ) {
