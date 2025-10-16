@@ -1,19 +1,13 @@
 package com.example.appasistencia.viewmodel
 
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
-import com.example.appasistencia.domain.validation.validateEmail
+import com.example.appasistencia.model.auth.entities.LoginState
+import com.example.appasistencia.model.auth.validation.LoginValidationResult
+import com.example.appasistencia.model.auth.validation.validateEmail
+import com.example.appasistencia.model.auth.validation.validatePassword
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-
-data class LoginState(
-    val correo: String = "",
-    val contraseña: String = "",
-    val correoError: String? = null,
-    val contraseñaError: String? = null,
-    val rememberMe: Boolean = false
-)
 
 class LoginViewModel : ViewModel() {
     private val _state = MutableStateFlow(LoginState())
@@ -35,20 +29,24 @@ class LoginViewModel : ViewModel() {
 
     fun validateForm(): Boolean {
         val emailValidation = validateEmail(_state.value.correo)
-        val passwordValidation = if (_state.value.contraseña.isBlank()) {
-            "La contraseña es obligatoria"
-        } else null
+        val passwordValidation = validatePassword(_state.value.contraseña)
 
         _state.update { it.copy(
-            correoError = emailValidation,
-            contraseñaError = passwordValidation
+            correoError = when (emailValidation) {
+                is LoginValidationResult.Valid -> null
+                is LoginValidationResult.Error -> emailValidation.message
+            },
+            contraseñaError = when (passwordValidation) {
+                is LoginValidationResult.Valid -> null
+                is LoginValidationResult.Error -> passwordValidation.message
+            }
         ) }
 
-        return emailValidation == null && passwordValidation == null
+        return emailValidation is LoginValidationResult.Valid &&
+                passwordValidation is LoginValidationResult.Valid
     }
 
     fun onRememberMeChange(remember: Boolean) {
-        _state.update { it.copy(rememberMe = remember)}
-
+        _state.update { it.copy(rememberMe = remember) }
     }
 }
