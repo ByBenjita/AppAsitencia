@@ -7,4 +7,7 @@ sealed class s(val route: String) {
 
     object RecContraseña : s("RecContraseña")
 
+    object Perfil : s("perfil")
+
+    object Home : s("home")
 }
