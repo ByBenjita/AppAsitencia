@@ -29,8 +29,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 
 @OptIn(ExperimentalMaterial3Api::class) // para que funcione la flecha de volver atras
 @Composable
