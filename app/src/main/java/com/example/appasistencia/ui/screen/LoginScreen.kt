@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
@@ -34,13 +33,13 @@ import androidx.compose.material3.Icon
 @OptIn(ExperimentalMaterial3Api::class) // para que funcione la flecha de volver atras
 @Composable
 fun LoginScreen(
-    onLogin: () -> Unit,    // Cuando el login es exitoso
+    onLogin: (Boolean) -> Unit,    // Recibe el estado de rememberMe
     onBack: () -> Unit,     // Para volver atrás
     onRecContraseña: () -> Unit
 ) {
-    val viewModel: LoginViewModel = viewModel ()
-    val state by viewModel.state.collectAsState()
 
+    val viewModel: LoginViewModel = viewModel()
+    val state by viewModel.state.collectAsState()
 
 //Implementaicion icono Flecha par volver atras
     Scaffold(
@@ -171,15 +170,17 @@ fun LoginScreen(
                  Button(
                      onClick = {
                          if (viewModel.validateForm()) {
-                             onLogin()
+                             onLogin(state.rememberMe) // Pasar el estado de rememberMe
                          }
-                     },
+                     },  // Esto navegará al Perfil
                      modifier = Modifier
-                         .width(250.dp)
-                         .height(60.dp)
+                         .fillMaxWidth()
+                         .height(50.dp)
+                         .padding(horizontal = 16.dp)
                  ) {
                      Text("Iniciar Sesión")
                  }
+
 
                 Text(
                     text = "¿Quieres Recuperar tu contraseña?",

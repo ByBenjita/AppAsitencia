@@ -4,9 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.appasistencia.model.auth.entities.User
+import com.example.appasistencia.ui.screen.HomeScreen
 import com.example.appasistencia.ui.screen.InicioAppScreen
 import com.example.appasistencia.ui.screen.LoginScreen
+import com.example.appasistencia.ui.screen.PerfilScreen
 import com.example.appasistencia.ui.screen.RecContraseñaScreen
+
 
 
 @Composable
@@ -15,36 +19,106 @@ fun NavGraph(navController: NavHostController) {
         navController = navController,
         startDestination = s.Inicio.route
     ) {
+
         composable(s.Inicio.route) {
             InicioAppScreen(
                 onGoToLogin = {
                     navController.navigate(s.Login.route)
                 },
                 onGoToInicio = {
-                    navController.navigate(s.Inicio.route)
+                    navController.navigate(s.Inicio.route) {
+                        popUpTo(s.Inicio.route) { inclusive = true }
+                    }
                 }
             )
         }
+
+
 
 
         composable(s.Login.route) {
             LoginScreen(
-                 onLogin = {
-                 },
-                 onBack = {
-                     navController.popBackStack()// Volver atras
-                 },
+                onLogin = { rememberMe ->
+                    // Redirigir según si guardó el inicio de sesión o no
+                    if (rememberMe) {
+                        // Si seleccionó "Guardar inicio de sesión", ir al Perfil
+                        navController.navigate(s.Perfil.route) {
+                            popUpTo(s.Login.route) { inclusive = true }
+                        }
+                    } else {
+                        // Si NO seleccionó "Guardar inicio de sesión", ir al Home
+                        navController.navigate(s.Home.route) {
+                            popUpTo(s.Login.route) { inclusive = true }
+                        }
+                    }
+                },
+                onBack = {
+                    navController.popBackStack()
+                },
                 onRecContraseña = {
                     navController.navigate(s.RecContraseña.route)
                 }
-             )
+            )
         }
-        composable (s.RecContraseña.route){
+
+
+        composable(s.RecContraseña.route) {
             RecContraseñaScreen(
-                onBack ={
+                onBack = {
                     navController.popBackStack()
+                },
+                onPasswordSaved = {
+                    navController.navigate(s.Login.route) {
+                        popUpTo(s.RecContraseña.route) { inclusive = true }
+                    }
                 }
+            )
+        }
+
+
+       composable(s.Perfil.route) {
+            PerfilScreen(
+                onBack = {
+                    // Volver al inicio
+                    navController.navigate(s.Login.route) {
+                        popUpTo(s.Perfil.route) { inclusive = true }
+                    }
+                },
+                onLoginScreen = {
+                    // Ir al Login para cambiar de cuenta
+                    navController.navigate(s.Login.route) {
+                        popUpTo(s.Perfil.route) { inclusive = true }
+                    }
+                },
+                navController = navController
+            )
+        }
+
+        // pantalla de Home
+        composable(s.Home.route) {
+            HomeScreen(
+                onBack = {
+                    // Volver al inicio
+                    navController.navigate(s.Login.route) {
+                        popUpTo(s.Home.route) { inclusive = true }
+                    }
+                },
+
+                onLoginScreen = {
+                    // Navegar al Login cuando se hace click en el texto
+                    navController.navigate(s.Login.route) {
+                        popUpTo(s.Home.route) { inclusive = true }
+                    }
+                },
+
+                //campo de Prueba
+                user = User(
+                    id = "1",
+                    nombre = "Juan Pérez",
+                    correo = "juan@email.com"
+                )
             )
         }
     }
 }
+
