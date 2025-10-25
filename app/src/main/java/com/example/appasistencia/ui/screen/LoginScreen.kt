@@ -169,7 +169,6 @@ fun LoginScreen(
             ){
                  Button(
                      onClick = {
-                         // Usar validateForm() en lugar de validateLogin()
                          if (viewModel.validateForm()) {
                              onLogin(state.rememberMe) // Pasar el estado de rememberMe
                          }
