@@ -34,22 +34,6 @@ fun NavGraph(navController: NavHostController) {
         }
 
 
-//        composable(s.Login.route) {
-//            LoginScreen(
-//                onLogin = {
-//                    //Al iniciar sesión exitoso, ir al Home
-//                    navController.navigate(s.Home.route) {
-//                        popUpTo(s.Login.route) { inclusive = true }
-//                    }
-//                },
-//                onBack = {
-//                    navController.popBackStack()// Volver atras
-//                },
-//                onRecContraseña = {
-//                    navController.navigate(s.RecContraseña.route)
-//                }
-//            )
-//        }
 
 
         composable(s.Login.route) {
@@ -105,7 +89,8 @@ fun NavGraph(navController: NavHostController) {
                     navController.navigate(s.Login.route) {
                         popUpTo(s.Perfil.route) { inclusive = true }
                     }
-                }
+                },
+                navController = navController
             )
         }
 
