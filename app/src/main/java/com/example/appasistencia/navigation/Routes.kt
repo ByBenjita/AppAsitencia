@@ -10,4 +10,6 @@ sealed class s(val route: String) {
     object Perfil : s("perfil")
 
     object Home : s("home")
+
+    object MarcarAsistencia : s("marcar_asistencia")
 }

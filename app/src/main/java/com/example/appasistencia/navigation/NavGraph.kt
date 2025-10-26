@@ -10,6 +10,7 @@ import com.example.appasistencia.ui.screen.InicioAppScreen
 import com.example.appasistencia.ui.screen.LoginScreen
 import com.example.appasistencia.ui.screen.PerfilScreen
 import com.example.appasistencia.ui.screen.RecContraseñaScreen
+import com.example.appasistencia.ui.screen.MarcarAsistenciaScreen
 
 
 
@@ -76,7 +77,8 @@ fun NavGraph(navController: NavHostController) {
         }
 
 
-       composable(s.Perfil.route) {
+        composable(s.Perfil.route) {
+
             PerfilScreen(
                 onBack = {
                     // Volver al inicio
@@ -96,29 +98,40 @@ fun NavGraph(navController: NavHostController) {
 
         // pantalla de Home
         composable(s.Home.route) {
-            HomeScreen(
-                onBack = {
-                    // Volver al inicio
-                    navController.navigate(s.Login.route) {
-                        popUpTo(s.Home.route) { inclusive = true }
-                    }
-                },
-
-                onLoginScreen = {
-                    // Navegar al Login cuando se hace click en el texto
-                    navController.navigate(s.Login.route) {
-                        popUpTo(s.Home.route) { inclusive = true }
-                    }
-                },
-
-                //campo de Prueba
-                user = User(
-                    id = "1",
-                    nombre = "Juan Pérez",
-                    correo = "juan@email.com"
+            // para mostrar barra de navegacion
+            NavigationBar(
+                actualScreen = s.Home.route,
+                navController = navController,
+            ) {
+                HomeScreen(
+                    onBack = {
+                        navController.navigate(s.Login.route){
+                            popUpTo(s.Home.route) {inclusive = true}
+                        }
+                    },
+                    onLoginScreen = {
+                        navController.navigate(s.Login.route) {
+                            popUpTo(s.Home.route) { inclusive = true }
+                        }
+                    },
+                    onMarcarAsistencia = {
+                        navController.navigate(s.MarcarAsistencia.route)
+                    },
+                        //campo de Prueba
+                    user = User(
+                            id = "1",
+                            nombre = "Juan Pérez",
+                            correo = "juan@email.com"
+                    )
                 )
+            }
+        }
+        composable(s.MarcarAsistencia.route) {
+            MarcarAsistenciaScreen(
+                onBack = {
+                    navController.popBackStack() // Vuelve a la pantalla anterior (Home)
+                }
             )
         }
     }
 }
-

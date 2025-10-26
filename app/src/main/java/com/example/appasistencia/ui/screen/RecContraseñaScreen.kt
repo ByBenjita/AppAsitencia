@@ -62,7 +62,7 @@ fun RecContraseñaScreen(
                 Button(
                     onClick = {
                         viewModel.hideRecoveryDialog()
-                        onPasswordSaved() // ⬅️ Regresar al hacer clic en Aceptar
+                        onPasswordSaved() // Regresar al hacer clic en Aceptar
                     }
                 ) {
                     Text("Aceptar")
