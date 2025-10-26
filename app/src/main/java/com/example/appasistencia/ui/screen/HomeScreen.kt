@@ -37,6 +37,7 @@ import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Locale
 import androidx.compose.runtime.setValue
+import com.example.appasistencia.data.PerimtidasLocation
 
 
 @OptIn(ExperimentalMaterial3Api::class) // para que funcione la flecha de volver atras
@@ -53,6 +54,10 @@ fun HomeScreen(
     var horaActual by remember { mutableStateOf(obtenerHoraActual()) }
     var fechaActual by remember { mutableStateOf(obtenerFechaActual()) }
 
+    // Obtener la primera ubicación permitida
+    val ubicacionTrabajo = remember {
+        PerimtidasLocation.sampleLocations.firstOrNull()?.name ?: "Ubicación no definida"
+    }
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -112,7 +117,7 @@ fun HomeScreen(
             ) {
                 Text(
                     text = "Hora actual",
-                    style = MaterialTheme.typography.labelMedium,
+                    style = MaterialTheme.typography.labelLarge, //tamaño letra
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
@@ -142,7 +147,7 @@ fun HomeScreen(
                 ) {
                     // Título de la card
                     Text(
-                        text = "Lugar de Trabajo", // agregar despues desde admin la ubi
+                        text = "Lugar de Trabajo: $ubicacionTrabajo", // mostrara la ubicacion del lugar der trabajo
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 20.dp)
@@ -155,7 +160,7 @@ fun HomeScreen(
                     ) {
                         Text(
                             text = "Fecha actual",
-                            style = MaterialTheme.typography.labelSmall,
+                            style = MaterialTheme.typography.labelLarge, //tamaño Letra
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
