@@ -127,11 +127,17 @@ fun NavGraph(navController: NavHostController) {
             }
         }
         composable(s.MarcarAsistencia.route) {
-            MarcarAsistenciaScreen(
-                onBack = {
-                    navController.popBackStack() // Vuelve a la pantalla anterior (Home)
-                }
-            )
+            // para mostrar barra de navegacion
+            NavigationBar(
+                actualScreen = s.MarcarAsistencia.route,
+                navController = navController,
+            ) {
+                MarcarAsistenciaScreen(
+                    onBack = {
+                        navController.popBackStack() // Vuelve a la pantalla anterior (Home)
+                    }
+                )
+            }
         }
     }
 }
