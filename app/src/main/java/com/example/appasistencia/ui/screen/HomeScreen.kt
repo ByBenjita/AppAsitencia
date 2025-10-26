@@ -3,8 +3,12 @@ package com.example.appasistencia.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.IconButton
@@ -16,12 +20,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.text.font.FontWeight
 import java.util.Calendar
 import com.example.appasistencia.model.auth.entities.User
-
+import androidx.compose.runtime.getValue
+import kotlinx.coroutines.delay
+import java.text.SimpleDateFormat
+import java.util.Locale
+import androidx.compose.runtime.setValue
 
 
 @OptIn(ExperimentalMaterial3Api::class) // para que funcione la flecha de volver atras
@@ -29,11 +44,23 @@ import com.example.appasistencia.model.auth.entities.User
 fun HomeScreen(
     onBack: () -> Unit,
     onLoginScreen: () -> Unit,
+    onMarcarAsistencia: () -> Unit,
     user: User? = null
-) {
-    val saludo = remember {HoraSaludo() }
-    val nombreUsuario = user?.nombre ?:"Usuario"
 
+) {
+    val saludo = remember { HoraSaludo() }
+    val nombreUsuario = user?.nombre ?: "Usuario"
+    var horaActual by remember { mutableStateOf(obtenerHoraActual()) }
+    var fechaActual by remember { mutableStateOf(obtenerFechaActual()) }
+
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1000) // Actualizar cada segundo esto para la hora
+            horaActual = obtenerHoraActual()
+            fechaActual = obtenerFechaActual()  // Actualizar solo una vez al dia
+        }
+    }
 
 //Implementaicion icono Flecha par volver atras
     Scaffold(
@@ -48,7 +75,6 @@ fun HomeScreen(
             )
 
         }
-
 
     ) { innerPadding ->
         Column(
@@ -76,17 +102,142 @@ fun HomeScreen(
                 fontSize = 16.sp,
                 modifier = Modifier.padding(top = 5.dp)
             )
+
+            Spacer(modifier = Modifier.height(20.dp)) //espacio antes de LA HORA
+
+
+            // Sección de Hora
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Hora actual",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = horaActual,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+
+            // Card lugar de trabajo
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .fillMaxWidth()
+                ) {
+                    // Título de la card
+                    Text(
+                        text = "Lugar de Trabajo", // agregar despues desde admin la ubi
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 20.dp)
+                    )
+
+                    //Fecha actual y posicionada a la izquierda
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = "Fecha actual",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = fechaActual,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Botón Marcar Asistencia que redirige a marcar asistencia
+                    Button(
+                        onClick = {
+                            onMarcarAsistencia()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text(
+                            text = "Marcar Asistencia",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
 
-//creacion de funcion que me permite tomar rango horario del dispositivo
-private fun HoraSaludo(): String {
-    val hora = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-    return when (hora) {
-        in 5..11 -> "Buen día"
-        in 12..18 -> "Buenas tardes"
-        else -> "Buenas noches"
+
+
+
+    // Componente para mostrar información en fila con ícono
+    @Composable
+    fun RowInfo(
+        title: String,
+        value: String
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(), // Ocupar le ancho completo
+            horizontalAlignment = Alignment.Start // Centrar contenido
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
     }
-}
+
+
+
+
+    // Funcion para obtener la fecha actual actualizada
+    private fun obtenerFechaActual(): String {
+        val formatter = SimpleDateFormat("EEEE, d 'de' MMMM 'de' yyyy", Locale("es", "ES"))
+        return formatter.format(Calendar.getInstance().time)
+    }
+
+    // Función para obtener la hora actual formateada
+    private fun obtenerHoraActual(): String {
+        val formatter = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+        return formatter.format(Calendar.getInstance().time)
+    }
+
+    // Función que me permite tomar rango horario del dispositivo
+    private fun HoraSaludo(): String {
+        val hora = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        return when (hora) {
+            in 5..11 -> "Buen día"
+            in 12..18 -> "Buenas tardes"
+            else -> "Buenas noches"
+        }
+    }
