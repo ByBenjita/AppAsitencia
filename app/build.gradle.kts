@@ -52,6 +52,12 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.androidx.navigation.compose)
+
+    //Para la implementacion del mapa
+    implementation("org.osmdroid:osmdroid-android:6.1.14")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("androidx.preference:preference-ktx:1.2.1")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
