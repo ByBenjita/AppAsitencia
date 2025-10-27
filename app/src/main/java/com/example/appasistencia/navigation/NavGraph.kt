@@ -12,7 +12,7 @@ import com.example.appasistencia.ui.screen.PerfilScreen
 import com.example.appasistencia.ui.screen.RecContraseñaScreen
 import com.example.appasistencia.ui.screen.MarcarAsistenciaScreen
 import com.example.appasistencia.ui.screen.NavegacionScreen
-
+import com.example.appasistencia.ui.screen.IncidenciasScreen
 
 
 @Composable
@@ -109,8 +109,8 @@ fun NavGraph(navController: NavHostController) {
             ) {
                 HomeScreen(
                     onBack = {
-                        navController.navigate(s.Login.route){
-                            popUpTo(s.Home.route) {inclusive = true}
+                        navController.navigate(s.Login.route) {
+                            popUpTo(s.Home.route) { inclusive = true }
                         }
                     },
                     onLoginScreen = {
@@ -121,11 +121,11 @@ fun NavGraph(navController: NavHostController) {
                     onMarcarAsistencia = {
                         navController.navigate(s.MarcarAsistencia.route)
                     },
-                        //campo de Prueba
+                    //campo de Prueba
                     user = User(
-                            id = "1",
-                            nombre = "Juan Pérez",
-                            correo = "juan@email.com"
+                        id = "1",
+                        nombre = "Juan Pérez",
+                        correo = "juan@email.com"
                     )
                 )
             }
@@ -143,20 +143,50 @@ fun NavGraph(navController: NavHostController) {
                 )
             }
         }
-
+            //PAntalla NAvegacion
         composable(s.NavegacionScreen.route) {
             NavigationBar(
                 actualScreen = s.NavegacionScreen.route,
                 navController = navController,
-                onNavegacionScreen = {
-                }
+                onNavegacionScreen = {}
             ) {
                 NavegacionScreen(
                     onBack = {
                         navController.popBackStack()
+                    },
+                    onFuerzaMayor = {
+                        navController.navigate("incidencia/Fuerza Mayor/FM")
+                    } ,
+
+                    onTrayecto = {
+                        navController.navigate("incidencia/Trayecto/TR")
                     }
+
+                )
+            }
+        }
+
+
+
+
+
+        // En NavGraph.kt - agrega una sola ruta para todas las incidencias
+        composable("incidencia/{tipo}/{abreviatura}") { backStackEntry ->
+            val tipo = backStackEntry.arguments?.getString("tipo") ?: "Incidencia"
+            val abreviatura = backStackEntry.arguments?.getString("abreviatura") ?: ""
+
+            NavigationBar(
+                actualScreen = "incidencia",
+                navController = navController,
+                onNavegacionScreen = {}
+            ) {
+                IncidenciasScreen(
+                    onBack = { navController.popBackStack() },
+                    tipoIncidencia = tipo,
+                    abreviatura = abreviatura
                 )
             }
         }
     }
 }
+
