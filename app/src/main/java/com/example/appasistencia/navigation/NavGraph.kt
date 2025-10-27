@@ -11,6 +11,7 @@ import com.example.appasistencia.ui.screen.LoginScreen
 import com.example.appasistencia.ui.screen.PerfilScreen
 import com.example.appasistencia.ui.screen.RecContraseñaScreen
 import com.example.appasistencia.ui.screen.MarcarAsistenciaScreen
+import com.example.appasistencia.ui.screen.NavegacionScreen
 
 
 
@@ -102,6 +103,9 @@ fun NavGraph(navController: NavHostController) {
             NavigationBar(
                 actualScreen = s.Home.route,
                 navController = navController,
+                onNavegacionScreen = {
+                    navController.navigate(s.NavegacionScreen.route) // para navegar a navegacionScrren
+                }
             ) {
                 HomeScreen(
                     onBack = {
@@ -135,6 +139,21 @@ fun NavGraph(navController: NavHostController) {
                 MarcarAsistenciaScreen(
                     onBack = {
                         navController.popBackStack() // Vuelve a la pantalla anterior (Home)
+                    }
+                )
+            }
+        }
+
+        composable(s.NavegacionScreen.route) {
+            NavigationBar(
+                actualScreen = s.NavegacionScreen.route,
+                navController = navController,
+                onNavegacionScreen = {
+                }
+            ) {
+                NavegacionScreen(
+                    onBack = {
+                        navController.popBackStack()
                     }
                 )
             }
