@@ -12,4 +12,6 @@ sealed class s(val route: String) {
     object Home : s("home")
 
     object MarcarAsistencia : s("marcar_asistencia")
+
+    object NavegacionScreen : s("navegacion_screen")
 }

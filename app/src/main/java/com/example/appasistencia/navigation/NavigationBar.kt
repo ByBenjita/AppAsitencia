@@ -11,6 +11,7 @@ import com.example.appasistencia.ui.components.BottomNavigationBar
 fun NavigationBar(
     actualScreen: String,
     navController: NavHostController,
+    onNavegacionScreen: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
 
@@ -26,7 +27,8 @@ fun NavigationBar(
                             inclusive = false
                         }
                     }
-                }
+                },
+                onNavegacion = onNavegacionScreen // Pasa la función al BottomNavigationBar
             )
         }
     ) { innerPadding ->

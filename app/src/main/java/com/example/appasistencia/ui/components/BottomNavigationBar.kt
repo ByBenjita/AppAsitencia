@@ -1,10 +1,16 @@
 package com.example.appasistencia.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Divider
@@ -21,7 +27,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.appasistencia.navigation.s
 
@@ -30,6 +39,7 @@ import com.example.appasistencia.navigation.s
 fun BottomNavigationBar(
     actualRoute: String,
     onItemClick: (String) -> Unit,
+    onNavegacion: () -> Unit = {},
     onDocumentos: () -> Unit = {},
     onVacaciones: () -> Unit = {},
     onSolicitudes: () -> Unit = {},
@@ -78,7 +88,7 @@ fun BottomNavigationBar(
                         )
                 )
 
-                // Opciones cliqueables del menú (sin íconos)
+                // Opciones cliqueables del menú
                 Text(
                     text = "Documentos",
                     style = MaterialTheme.typography.bodyMedium,
@@ -214,12 +224,29 @@ fun BottomNavigationBar(
         }
     }
 
-    NavigationBar {
-        // Espacio izquierdo
+    NavigationBar (
+        modifier = Modifier.height(110 .dp)// modificar aslto de barra de navegacion
+    ){
+        // Izquierda  ciculo con simbolo +
         NavigationBarItem(
             selected = false,
-            onClick = {},
-            icon = {}
+            onClick = { onNavegacion() },
+            icon = {
+                Box(
+                    modifier = Modifier
+                        .size(50.dp) // Tamaño del círculo
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Navegart",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
         )
 
         // Centro - Home
