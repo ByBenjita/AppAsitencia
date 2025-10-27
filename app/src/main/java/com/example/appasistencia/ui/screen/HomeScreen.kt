@@ -2,6 +2,7 @@ package com.example.appasistencia.ui.screen
 
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +39,14 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import androidx.compose.runtime.setValue
 import com.example.appasistencia.data.PerimtidasLocation
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import com.example.appasistencia.ui.components.Informacion
 
 
 @OptIn(ExperimentalMaterial3Api::class) // para que funcione la flecha de volver atras
@@ -53,6 +62,7 @@ fun HomeScreen(
     val nombreUsuario = user?.nombre ?: "Usuario"
     var horaActual by remember { mutableStateOf(obtenerHoraActual()) }
     var fechaActual by remember { mutableStateOf(obtenerFechaActual()) }
+    var showInformacionMenu by remember { mutableStateOf(false) }
 
     // Obtener la primera ubicación permitida
     val ubicacionTrabajo = remember {
@@ -74,11 +84,13 @@ fun HomeScreen(
                 title = { Text("Iniciar Sesion") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Volver"
+                        )
                     }
                 }
             )
-
         }
 
     ) { innerPadding ->
@@ -108,7 +120,7 @@ fun HomeScreen(
                 modifier = Modifier.padding(top = 5.dp)
             )
 
-            Spacer(modifier = Modifier.height(20.dp)) //espacio antes de LA HORA
+            Spacer(modifier = Modifier.height(15.dp)) //espacio antes de LA HORA
 
 
             // Sección de Hora
@@ -190,12 +202,61 @@ fun HomeScreen(
                     }
                 }
             }
+
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.End, // alinea elementos al final a la derecha
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Círculo con "!" a la derecha
+                Box(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(
+                        onClick = { showInformacionMenu = true }, // Abre el menú de información
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Info,
+                            contentDescription = "Información",
+                            tint = Color.White,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
+            }
+
+
+            // Componente Informacion
+            Informacion(
+                showMenu = showInformacionMenu,
+                onDismiss = { showInformacionMenu = false },
+                onRepProblema = {
+                    println("Reportar Problema clicked")
+                },
+                onNoPuedoIngresar = {
+                    println("No puedo Ingresar clicked")
+                },
+                onApoyoUsuario = {
+                    println("Apoyo Usuario clicked")
+                },
+                onManualUso = {
+                    println("Manual de Uso clicked")
+                }
+            )
         }
     }
 }
-
-
-
 
 
     // Componente para mostrar información en fila con ícono
