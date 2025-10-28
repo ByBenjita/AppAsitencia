@@ -19,8 +19,10 @@ import java.util.*
 fun IncidenciasScreen(
     onBack: () -> Unit,
     tipoIncidencia: String,
-    abreviatura: String = ""
+    abreviatura: String = "",
+    categoria: String = "General"
 ) {
+
     var motivo by remember { mutableStateOf("") }
     val currentTime = remember {
         SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
@@ -59,7 +61,7 @@ fun IncidenciasScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            // Título principal
+            // Título Categoria
             Text(
                 text = tipoIncidencia,
                 style = MaterialTheme.typography.headlineMedium,
@@ -71,8 +73,26 @@ fun IncidenciasScreen(
             OutlinedTextField(
                 value = motivo,
                 onValueChange = { motivo = it },
-                label = { Text("Motivo") },
-                placeholder = { Text("Escribe aquí el motivo ") },
+                label = {
+                    Text(
+                        when (categoria) {
+                            "Incidencia" -> "Motivo de la incidencia"
+                            "Solicitud" -> "Motivo de la solicitud"
+                            "Justificación" -> "Motivo de la justificación"
+                            else -> "Motivo"
+                        }
+                    )
+                },
+                placeholder = {
+                    Text(
+                        when (categoria) {
+                            "Incidencia" -> "Describe el motivo de la incidencia..."
+                            "Solicitud" -> "Explica el motivo de tu solicitud..."
+                            "Justificación" -> "Justifica el motivo..."
+                            else -> "Escribe aquí el motivo..."
+                        }
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
@@ -132,7 +152,12 @@ fun IncidenciasScreen(
                     .height(50.dp)
             ) {
                 Text(
-                    text = "Enviar Solicitud ",
+                    text = when (categoria) {
+                        "Incidencia" -> "Enviar Incidencia"
+                        "Solicitud" -> "Enviar Solicitud"
+                        "Justificación" -> "Enviar Justificación"
+                        else -> "Enviar"
+                    },
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold
                 )
