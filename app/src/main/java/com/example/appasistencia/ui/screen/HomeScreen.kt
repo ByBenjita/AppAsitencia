@@ -38,7 +38,7 @@ import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Locale
 import androidx.compose.runtime.setValue
-import com.example.appasistencia.data.PerimtidasLocation
+import com.example.appasistencia.data.AllowedLocations
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -66,7 +66,7 @@ fun HomeScreen(
 
     // Obtener la primera ubicación permitida
     val ubicacionTrabajo = remember {
-        PerimtidasLocation.sampleLocations.firstOrNull()?.name ?: "Ubicación no definida"
+        AllowedLocations.sampleLocations.firstOrNull()?.name ?: "Ubicación no definida"
     }
 
     LaunchedEffect(Unit) {
