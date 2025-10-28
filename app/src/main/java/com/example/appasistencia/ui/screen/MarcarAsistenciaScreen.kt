@@ -44,10 +44,11 @@ import contrexempie.appassistence.model.entities.TipoRegistro
 import contrexempie.appassistence.ui.components.RegistrarButton
 
 // Import necesarias para osmdroid
-import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+
 
 
 
@@ -196,36 +197,32 @@ fun RealMapWithLocation(
     locationName: String
 ) {
     val context = LocalContext.current
-    val mapView = remember {
-        MapView(context).apply {
-            Configuration.getInstance().load(
-                context,
-                androidx.preference.PreferenceManager.getDefaultSharedPreferences(context)
-            )
-            setMultiTouchControls(true)
-            controller.setZoom(17.0)
-        }
-    }
 
-    // Actualiza el marcador cuando cambia la ubicación
-    LaunchedEffect(actualLocation) {
-        if (actualLocation != null) {
-            val point = GeoPoint(actualLocation.latitude, actualLocation.longitude)
-            mapView.controller.setCenter(point)
-            val marker = Marker(mapView).apply {
-                position = point
-                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                title = locationName
+    AndroidView(
+        factory = { context ->
+            MapView(context).apply {
+                // CONFIGURACIÓN PARA FORZAR CARGA DE TILES
+                setTileSource(TileSourceFactory.MAPNIK)
+                setMultiTouchControls(true)
+                setUseDataConnection(true) //
+
+                // Configuración de cache
+                tileProvider.tileSource = TileSourceFactory.MAPNIK
+
+                val testPoint = GeoPoint(-33.350225, -70.880267)
+                controller.setZoom(17.0)
+                controller.setCenter(testPoint)
+
+                val marker = Marker(this).apply {
+                    position = testPoint
+                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    title = "Ubicación: $locationName"
+                }
+                overlays.add(marker)
+                invalidate()
             }
-            mapView.overlays.clear()
-            mapView.overlays.add(marker)
-            mapView.invalidate()
-        }
-    }
-
-    AndroidView(factory = { mapView },
-        modifier = Modifier
-            .fillMaxSize()
+        },
+        modifier = Modifier.fillMaxSize()
     )
 }
 
