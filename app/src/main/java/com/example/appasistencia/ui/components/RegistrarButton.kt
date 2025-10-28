@@ -15,7 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import android.location.Location
 import android.widget.Toast
-import com.example.appasistencia.data.PerimtidasLocation
+import com.example.appasistencia.data.AllowedLocations
 import contrexempie.appassistence.model.entities.TipoRegistro
 import com.example.appasistencia.utils.LocationUtils
 
@@ -113,7 +113,7 @@ private fun validateAndRegister(
     val userLon = actualLocation.longitude
 
 
-    val isInside = PerimtidasLocation.sampleLocations.any { allowedLoc ->
+    val isInside = AllowedLocations.sampleLocations.any { allowedLoc ->
         LocationUtils.isWithinRadius(
             userLat,
             userLon,
