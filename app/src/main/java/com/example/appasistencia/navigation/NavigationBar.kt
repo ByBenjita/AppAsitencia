@@ -57,7 +57,7 @@ fun NavigationBar(
                     // Lógica para tutorial
                 },
                 onContacto = {
-                    // Lógica para contacto
+                    // Lógica para contact
                 },
                 onCerrarSesion = {
                     // Cerrar sesión y volver al login
