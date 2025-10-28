@@ -28,7 +28,43 @@ fun NavigationBar(
                         }
                     }
                 },
-                onNavegacion = onNavegacionScreen // Pasa la función al BottomNavigationBar
+                onNavegacion = onNavegacionScreen,
+                onVacaciones = {
+                    navController.navigate(s.Vacaciones.route) {
+                        launchSingleTop = true
+                    }
+                },
+                onDocumentos = {
+                    // Navegación a documentos
+                    // navController.navigate()
+                },
+                onSolicitudes = {
+                    // Navegación a solicitudes
+                    // navController.navigate()
+                },
+                onMarcaciones = {
+                    // Navegación a marcaciones
+                    // navController.navigate()
+                },
+                onJustificaciones = {
+                    // Navegación a justificaciones
+                    // navController.navigate()
+                },
+                onModoOscuro = {
+                    // Lógica para modo oscuro
+                },
+                onTutorial = {
+                    // Lógica para tutorial
+                },
+                onContacto = {
+                    // Lógica para contact
+                },
+                onCerrarSesion = {
+                    // Cerrar sesión y volver al login
+                    navController.navigate("login") {
+                        popUpTo(0)
+                    }
+                }
             )
         }
     ) { innerPadding ->

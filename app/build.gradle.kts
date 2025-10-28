@@ -54,7 +54,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     //Para la implementacion del mapa
-    implementation("org.osmdroid:osmdroid-android:6.1.14")
+    implementation("org.osmdroid:osmdroid-android:6.1.17")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("androidx.preference:preference-ktx:1.2.1")
 

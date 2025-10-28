@@ -14,4 +14,12 @@ sealed class s(val route: String) {
     object MarcarAsistencia : s("marcar_asistencia")
 
     object NavegacionScreen : s("navegacion_screen")
+
+    object Vacaciones : s( "vacaciones" )
+
+    object SolicitudVacaciones : s("solicitud_vacaciones")
+
+    object HistorialVacaciones : s("historial_vacaciones")
+
+
 }
