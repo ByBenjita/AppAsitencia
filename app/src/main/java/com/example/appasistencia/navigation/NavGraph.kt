@@ -1,10 +1,12 @@
 package com.example.appasistencia.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.appasistencia.model.auth.entities.User
+import com.example.appasistencia.ui.screen.HistorialVacacionesScreen
 import com.example.appasistencia.ui.screen.HomeScreen
 import com.example.appasistencia.ui.screen.InicioAppScreen
 import com.example.appasistencia.ui.screen.LoginScreen
@@ -13,10 +15,16 @@ import com.example.appasistencia.ui.screen.RecContraseñaScreen
 import com.example.appasistencia.ui.screen.MarcarAsistenciaScreen
 import com.example.appasistencia.ui.screen.NavegacionScreen
 import com.example.appasistencia.ui.screen.IncidenciasScreen
+import com.example.appasistencia.ui.screen.SolicitudVacacionesScreen
+import com.example.appasistencia.ui.screen.VacacionesScreen
+import com.example.appasistencia.viewmodel.VacacionesViewModel
 
 
 @Composable
 fun NavGraph(navController: NavHostController) {
+
+    val vacacionesViewModel: VacacionesViewModel = viewModel ()
+
     NavHost(
         navController = navController,
         startDestination = s.Inicio.route
@@ -154,23 +162,87 @@ fun NavGraph(navController: NavHostController) {
                     onBack = {
                         navController.popBackStack()
                     },
+                    //  INCIDENCIAS
                     onFuerzaMayor = {
                         navController.navigate("incidencia/Fuerza Mayor/FM")
                     } ,
 
                     onTrayecto = {
                         navController.navigate("incidencia/Trayecto/TR")
+                    },
+
+                    // SOLICITUDES
+                    onPermisoSalida = {
+                        navController.navigate("solicitud/Permiso de Salida/PS")
+                    },
+                    onVacaciones = {
+                        navController.navigate(s.Vacaciones.route) //navega a vacacionesScreen
+                    },
+                    // JUSTIFICACIONES
+                    onInasistencia = {
+                        navController.navigate("justificacion/Inasistencia/IN")
+                    },
+
+                    onAtraso = {
+                        navController.navigate("justificacion/Atraso/AT")
                     }
 
                 )
             }
         }
 
+        composable(s.Vacaciones.route) {
+            NavigationBar(
+                actualScreen = s.Vacaciones.route,
+                navController = navController,
+                onNavegacionScreen = {}
+            ) {
+                VacacionesScreen(
+                    onBack = { navController.popBackStack() },
+                    onSolicitarVacaciones = { diasDisponibles ->
+                        navController.navigate(s.SolicitudVacaciones.route)
+                    },
+                    onVerHistorial = {
+                        // Navegar al historial de vacaciones
+                        navController.navigate(s.HistorialVacaciones.route)
+                    }
+
+                )
+            }
+        }
+            //PANTALLA SOLICITUD DE VACACIONES
+        composable(s.SolicitudVacaciones.route) {
+            NavigationBar(
+                actualScreen = s.SolicitudVacaciones.route,
+                navController = navController,
+                onNavegacionScreen = {}
+            ) {
+                SolicitudVacacionesScreen(
+                    onBack = { navController.popBackStack() },
+                    diasDisponibles = 20, //dias disponibles
+                    vacacionesViewModel = vacacionesViewModel // Pasar el ViewModel compartido
+                )
+            }
+        }
 
 
+        // Pamtalla HISTORIAL
+        composable(s.HistorialVacaciones.route) {
+            NavigationBar(
+                actualScreen = s.HistorialVacaciones.route,
+                navController = navController,
+                onNavegacionScreen = {}
+            ) {
+                HistorialVacacionesScreen(
+                    onBack = { navController.popBackStack() },
+                    vacacionesViewModel = vacacionesViewModel // Pasar el ViewModel compartido
+
+                )
+            }
+        }
 
 
-        // En NavGraph.kt - agrega una sola ruta para todas las incidencias
+        // RUTA INCIDENCIAS
         composable("incidencia/{tipo}/{abreviatura}") { backStackEntry ->
             val tipo = backStackEntry.arguments?.getString("tipo") ?: "Incidencia"
             val abreviatura = backStackEntry.arguments?.getString("abreviatura") ?: ""
@@ -184,6 +256,44 @@ fun NavGraph(navController: NavHostController) {
                     onBack = { navController.popBackStack() },
                     tipoIncidencia = tipo,
                     abreviatura = abreviatura
+                )
+            }
+        }
+
+        // RUTA SOLICITUDES
+        composable("solicitud/{tipo}/{abreviatura}") { backStackEntry ->
+            val tipo = backStackEntry.arguments?.getString("tipo") ?: "Solicitud"
+            val abreviatura = backStackEntry.arguments?.getString("abreviatura") ?: ""
+
+            NavigationBar(
+                actualScreen = "solicitud",
+                navController = navController,
+                onNavegacionScreen = {}
+            ) {
+                IncidenciasScreen(
+                    onBack = { navController.popBackStack() },
+                    tipoIncidencia = tipo,
+                    abreviatura = abreviatura,
+                    categoria = "Solicitud"
+                )
+            }
+        }
+
+        // RUTA JUSTIFICACIONES
+        composable("justificacion/{tipo}/{abreviatura}") { backStackEntry ->
+            val tipo = backStackEntry.arguments?.getString("tipo") ?: "Justificación"
+            val abreviatura = backStackEntry.arguments?.getString("abreviatura") ?: ""
+
+            NavigationBar(
+                actualScreen = "justificacion",
+                navController = navController,
+                onNavegacionScreen = {}
+            ) {
+                IncidenciasScreen(
+                    onBack = { navController.popBackStack() },
+                    tipoIncidencia = tipo,
+                    abreviatura = abreviatura,
+                    categoria = "Justificación"
                 )
             }
         }
