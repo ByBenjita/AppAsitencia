@@ -33,7 +33,7 @@ object LocationUtils {
 }
 
 // Valida si la ubicacion en la que estoy
-//coincide con alguna de las agregadas como parametro
+//coincide con alguna de las agregadas como parametro en Data
 
 fun LocationUtils.isWithinAnyAllowedLocation(
     currentLocation: Location?,
@@ -69,7 +69,7 @@ fun LocationUtils.getNearestAllowedLocation(
 }
 
 
-// Encuentra la ubicación permitida más cercana
+// Encuentra la ubicacion permitida más cercana
 fun LocationUtils.getDistanceToNearestAllowedLocation(
     currentLocation: Location?,
     allowedLocations: List<AllowedLocation>
