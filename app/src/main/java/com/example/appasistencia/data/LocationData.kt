@@ -15,7 +15,7 @@ object AllowedLocations {
             "Sta. Elena de Huechuraba 1660,Región Metropolitana",
             -33.36340413045603,
             -70.67818520352537,
-            20f // 20 metros de radio
+            40f // 40 metros de radio
         ), // Duoc Plaza Norte
 
         AllowedLocation(
