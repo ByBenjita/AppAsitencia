@@ -1,10 +1,14 @@
 package com.example.appasistencia.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.appasistencia.data.repository.UserRepository
 import com.example.appasistencia.model.auth.entities.User
 import com.example.appasistencia.model.auth.entities.UserPerfil
 import com.example.appasistencia.ui.screen.HistorialVacacionesScreen
@@ -28,8 +32,23 @@ import com.example.appasistencia.viewmodel.AsistenciaViewModel
 @Composable
 fun NavGraph(navController: NavHostController) {
 
+
+    val context = LocalContext.current
+    val userRepository = remember { UserRepository(context) }
     val vacacionesViewModel: VacacionesViewModel = viewModel ()
     val asistenciaViewModel: AsistenciaViewModel = viewModel ()
+
+
+    // Verificar al inicio si hay usuario guardado para redirigir automáticamente
+    LaunchedEffect(Unit) {
+        val hasSavedUser = userRepository.hasSavedUser()
+        if (hasSavedUser) {
+            // Si hay usuario guardado, ir DIRECTAMENTE al Perfil
+            navController.navigate(s.Perfil.route) {
+                popUpTo(s.Inicio.route) { inclusive = true }
+            }
+        }
+    }
 
 
     NavHost(
@@ -50,23 +69,12 @@ fun NavGraph(navController: NavHostController) {
             )
         }
 
-
-
-
         composable(s.Login.route) {
             LoginScreen(
-                onLogin = { rememberMe ->
-                    // Redirigir según si guardó el inicio de sesión o no
-                    if (rememberMe) {
-                        // Si seleccionó "Guardar inicio de sesión", ir al Perfil
-                        navController.navigate(s.Perfil.route) {
-                            popUpTo(s.Login.route) { inclusive = true }
-                        }
-                    } else {
-                        // Si NO seleccionó "Guardar inicio de sesión", ir al Home
-                        navController.navigate(s.Home.route) {
-                            popUpTo(s.Login.route) { inclusive = true }
-                        }
+                onLoginSucces = {
+                    // Redirigir al PerfilScreen directamente
+                    navController.navigate(s.Perfil.route) {
+                        popUpTo(s.Login.route) { inclusive = true }
                     }
                 },
                 onBack = {
@@ -77,7 +85,6 @@ fun NavGraph(navController: NavHostController) {
                 }
             )
         }
-
 
         composable(s.RecContraseña.route) {
             RecContraseñaScreen(
@@ -92,18 +99,24 @@ fun NavGraph(navController: NavHostController) {
             )
         }
 
-
         composable(s.Perfil.route) {
-
             PerfilScreen(
                 onBack = {
-                    // Volver al inicio
-                    navController.navigate(s.Login.route) {
-                        popUpTo(s.Perfil.route) { inclusive = true }
+                    // Al volver desde perfil, si hay usuario guardado va a Home
+                    // Si no hay usuario guardado, va a Login
+                    if (userRepository.hasSavedUser()) {
+                        navController.navigate(s.Home.route) {
+                            popUpTo(s.Perfil.route) { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate(s.Login.route) {
+                            popUpTo(s.Perfil.route) { inclusive = true }
+                        }
                     }
                 },
                 onLoginScreen = {
-                    // Ir al Login para cambiar de cuenta
+                    // Limpiar datos y ir a login para cambiar de cuenta
+                    userRepository.logout()
                     navController.navigate(s.Login.route) {
                         popUpTo(s.Perfil.route) { inclusive = true }
                     }
@@ -113,7 +126,6 @@ fun NavGraph(navController: NavHostController) {
         }
 
         // Perfil Usuario
-
         composable(s.PerfilUsuario.route) {
             NavigationBar(
                 actualScreen = s.PerfilUsuario.route,
@@ -132,25 +144,25 @@ fun NavGraph(navController: NavHostController) {
             }
         }
 
-
-
         // pantalla de Home
         composable(s.Home.route) {
-            // para mostrar barra de navegacion
             NavigationBar(
                 actualScreen = s.Home.route,
                 navController = navController,
                 onNavegacionScreen = {
-                    navController.navigate(s.NavegacionScreen.route) // para navegar a navegacionScrren
+                    navController.navigate(s.NavegacionScreen.route)
                 }
             ) {
                 HomeScreen(
                     onBack = {
-                        navController.navigate(s.Login.route) {
+                        // Al volver desde Home, ir al Perfil
+                        navController.navigate(s.Perfil.route) {
                             popUpTo(s.Home.route) { inclusive = true }
                         }
                     },
                     onLoginScreen = {
+                        // Cambiar de cuenta - limpiar y ir a login
+                        userRepository.logout()
                         navController.navigate(s.Login.route) {
                             popUpTo(s.Home.route) { inclusive = true }
                         }
@@ -158,7 +170,6 @@ fun NavGraph(navController: NavHostController) {
                     onMarcarAsistencia = {
                         navController.navigate(s.MarcarAsistencia.route)
                     },
-                    //campo de Prueba
                     user = User(
                         id = "1",
                         nombre = "Juan Pérez",
