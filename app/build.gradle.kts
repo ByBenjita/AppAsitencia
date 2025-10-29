@@ -57,6 +57,11 @@ dependencies {
     implementation("org.osmdroid:osmdroid-android:6.1.17")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("androidx.preference:preference-ktx:1.2.1")
+    implementation(libs.androidx.compose.animation.core.lint)
+
+    // Inconos
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
