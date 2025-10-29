@@ -29,8 +29,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.rounded.Visibility
+import androidx.compose.material.icons.rounded.VisibilityOff
 
-@OptIn(ExperimentalMaterial3Api::class) // para que funcione la flecha de volver atras
+@OptIn(ExperimentalMaterial3Api::class)
+    // para que funcione la flecha de volver atras
 @Composable
 fun LoginScreen(
     onLogin: (Boolean) -> Unit,    // Recibe el estado de rememberMe
@@ -40,6 +50,9 @@ fun LoginScreen(
 
     val viewModel: LoginViewModel = viewModel()
     val state by viewModel.state.collectAsState()
+
+    // Estado para controlar la visibilidad de la contraseña
+    var passwordVisible by remember { mutableStateOf(false) }
 
 //Implementaicion icono Flecha par volver atras
     Scaffold(
@@ -92,7 +105,7 @@ fun LoginScreen(
                     value = state.correo,
                     onValueChange = viewModel::onEmailChange,
                     label = { Text("Correo") },
-                    placeholder = { Text("Escriba aca su Correo") },
+                    placeholder = { Text("Escriba acá su Correo") },
                     isError = state.correoError != null,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -125,13 +138,35 @@ fun LoginScreen(
                     value = state.contraseña,
                     onValueChange = viewModel::onPasswordChange,
                     label = { Text("Contraseña") },
-                    placeholder = { Text("Escriba aca su Contraseña") },
+                    placeholder = { Text("Escriba acá su Contraseña") },
                     isError = state.contraseñaError != null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp) //separa de la orilla
                         .padding(bottom = 16.dp),
-                    singleLine = true
+                    singleLine = true,
+
+                    // CONFIGURACIÓN PARA CONTRASEÑA
+                    visualTransformation = if (passwordVisible) {
+                        VisualTransformation.None // Texto visible
+                    } else {
+                        PasswordVisualTransformation() // Texto oculto
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    // BOTÓN PARA MOSTRAR/OCULTAR CONTRASEÑA
+                    trailingIcon = {
+                        val image = if (passwordVisible) {
+                            Icons.Rounded.VisibilityOff
+                        } else {
+                            Icons.Rounded.Visibility
+                        }
+                        val description = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
+
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(imageVector = image, contentDescription = description)
+
+                        }
+                    }
                 )
 
                 //Mensaje de error de contraseña
@@ -154,7 +189,7 @@ fun LoginScreen(
                         onCheckedChange = viewModel::onRememberMeChange
                     )
                     Text(
-                        text = "Gurdar inicio de sesión",
+                        text = "Guardar inicio de sesión",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(start = 8.dp)
                     )
