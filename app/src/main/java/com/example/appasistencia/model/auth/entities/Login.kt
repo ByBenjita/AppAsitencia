@@ -10,8 +10,16 @@ data class LoginRequest(
 data class User(
     val id: String,
     val nombre: String,
-    val correo: String
+    val correo: String,
 )
+
+data class UserPerfil(
+    val id: String,
+    val nombre: String,
+    val correo: String,
+    val numeroCel: String
+)
+
 
 data class LoginState(
     val correo: String = "",
