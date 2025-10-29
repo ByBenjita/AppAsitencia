@@ -25,8 +25,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
+import com.example.appasistencia.data.repository.UserRepository
 import com.example.appasistencia.navigation.s
 
 
@@ -38,6 +41,10 @@ fun PerfilScreen(
     onLoginScreen: () -> Unit,
     navController: NavHostController,
 ) {
+
+    val context = LocalContext.current
+    val userRepository = remember { UserRepository(context) }
+    val savedUser = remember { userRepository.getSavedUser() }
 
 //Implementaicion icono Flecha par volver atras
     Scaffold(
@@ -71,6 +78,7 @@ fun PerfilScreen(
             Spacer(modifier = Modifier.height(90.dp))
 
             LoginCard(
+                userEmail = savedUser?.usuario ?: "No disponible", // Muestra el email guardado
                 onNavigateToHome = {
                     navController.navigate(s.Home.route) {
                         popUpTo(s.Home.route) { inclusive = true }
@@ -93,7 +101,9 @@ fun PerfilScreen(
 
 // APARTADO DE TARJETA, PARA MOSTRAR DATOS DE USUARIO QUE INICIO
 @Composable
-fun LoginCard(onNavigateToHome: () -> Unit ) {
+fun LoginCard(
+    userEmail: String,
+    onNavigateToHome: () -> Unit ) {
 
    //Al clickear la card me reotorna a home
     Card(

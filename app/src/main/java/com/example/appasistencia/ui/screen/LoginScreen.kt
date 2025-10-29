@@ -38,21 +38,33 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.runtime.setValue
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import com.example.appasistencia.viewmodel.LoginViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
     // para que funcione la flecha de volver atras
 @Composable
 fun LoginScreen(
-    onLogin: (Boolean) -> Unit,    // Recibe el estado de rememberMe
+    onLoginSucces: () -> Unit,    // Recibe el estado de rememberMe
     onBack: () -> Unit,     // Para volver atrás
     onRecContraseña: () -> Unit
 ) {
-
-    val viewModel: LoginViewModel = viewModel()
+    val context = LocalContext.current
+    val viewModel: LoginViewModel = viewModel(
+        factory = LoginViewModelFactory(context)
+    )
     val state by viewModel.state.collectAsState()
 
     // Estado para controlar la visibilidad de la contraseña
     var passwordVisible by remember { mutableStateOf(false) }
+
+
+    // Auto-rellenar campos si hay usuario guardado
+    LaunchedEffect(Unit) {
+        if (viewModel.isAutoLoginChecked() && state.rememberMe && state.correo.isNotEmpty()) {
+        }
+    }
 
 //Implementaicion icono Flecha par volver atras
     Scaffold(
@@ -204,8 +216,9 @@ fun LoginScreen(
             ){
                  Button(
                      onClick = {
-                         if (viewModel.validateForm()) {
-                             onLogin(state.rememberMe) // Pasar el estado de rememberMe
+                         if (viewModel.performLogin()) {
+                             // Solo navega si las credenciales son válidas
+                             onLoginSucces()
                          }
                      },  // Esto navegará al Perfil
                      modifier = Modifier
