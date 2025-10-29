@@ -38,13 +38,16 @@ import androidx.compose.ui.graphics.Color
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavegacionScreen(
-    onBack: () -> Unit,
+    onBack: () -> Unit, //volver Atras
+    //Incidencia
     onFuerzaMayor: () -> Unit = {},
     onTrayecto: () -> Unit = {},
+    //Solicitudes
     onPermisoSalida: () -> Unit = {},
     onVacaciones: () -> Unit = {},
+   //Justificaciones
     onInasistencia: () -> Unit = {},
-    onAtraso: () -> Unit = {}
+    onAtraso: () -> Unit = {},
 ) {
 
     //Implementaicion icono Flecha par volver atras
