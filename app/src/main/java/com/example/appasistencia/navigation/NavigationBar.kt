@@ -34,6 +34,13 @@ fun NavigationBar(
                         launchSingleTop = true
                     }
                 },
+                onPerfilUsuario = {
+                    navController.navigate(s.PerfilUsuario.route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+
+                },
                 onDocumentos = {
                     // Navegación a documentos
                     // navController.navigate()
@@ -43,8 +50,8 @@ fun NavigationBar(
                     // navController.navigate()
                 },
                 onMarcaciones = {
-                    // Navegación a marcaciones
-                    // navController.navigate()
+                    navController.navigate(s.RegistroAsistenciaScreen.route)
+
                 },
                 onJustificaciones = {
                     // Navegación a justificaciones
