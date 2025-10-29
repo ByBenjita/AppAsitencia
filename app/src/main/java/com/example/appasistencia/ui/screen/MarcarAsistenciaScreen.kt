@@ -21,7 +21,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import android.location.Location
+import android.widget.Toast
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -39,9 +39,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.Alignment
 import com.example.appasistencia.model.auth.entities.LocationsService
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.appasistencia.data.AllowedLocations
+import com.example.appasistencia.utils.LocationUtils
+import com.example.appasistencia.utils.getDistanceToNearestAllowedLocation
+import com.example.appasistencia.utils.getNearestAllowedLocation
+import com.example.appasistencia.utils.isWithinAnyAllowedLocation
 import contrexempie.appassistence.model.entities.TipoRegistro
 import contrexempie.appassistence.ui.components.RegistrarButton
+import com.example.appasistencia.viewmodel.AsistenciaViewModel
 
 // Import necesarias para osmdroid
 import org.osmdroid.util.GeoPoint
@@ -51,14 +60,12 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 
 
 
-
-
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MarcarAsistenciaScreen(
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    asistenciaViewModel: AsistenciaViewModel = viewModel() //Recibir ViewModel
+
 ) {
     val actualDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
     val actualTime = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
@@ -68,17 +75,64 @@ fun MarcarAsistenciaScreen(
     var actualLocation by remember { mutableStateOf<Location?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var locationName by remember { mutableStateOf("Detectando ubicación...") }
-    var showConfirmationDialog by remember { mutableStateOf(false) }
+    var isWithinRange by remember { mutableStateOf(false) }
+    var distanceToNearest by remember { mutableStateOf<Float?>(null) }
+    var nearestLocationName by remember { mutableStateOf("") }
 
-    // Obtener ubicación actual con tu servicio
-    LaunchedEffect(Unit) {
+    var mapKey by remember { mutableStateOf(0) }
+
+
+
+    // Usar DisposableEffect para manejar el lifecycle correctamente
+    DisposableEffect(Unit) {
         val service = LocationsService()
+
         service.getUserLocation(context) { location ->
             actualLocation = location
-            isLoading = false
-            locationName = if (location != null) "Ubicación detectada" else "Sin señal GPS"
+            if (location != null) {
+                service.getAddressFromLocation(context, location) { address ->
+                    locationName = address
+
+                    //FORZAR ACTUALIZACIÓN DEL MAPA cambiando la key
+                    mapKey++
+
+                    // VERIFICAR SI ESTÁ EN RANGO PERMITIDO usando tu LocationUtils
+                    val withinRange = LocationUtils.isWithinAnyAllowedLocation(
+                        location,
+                        AllowedLocations.sampleLocations
+                    )
+                    isWithinRange = withinRange
+
+                    // Obtener información de la ubicación más cercana
+                    val nearest = LocationUtils.getNearestAllowedLocation(
+                        location,
+                        AllowedLocations.sampleLocations
+                    )
+                    distanceToNearest = LocationUtils.getDistanceToNearestAllowedLocation(
+                        location,
+                        AllowedLocations.sampleLocations
+                    )
+                    nearestLocationName = nearest?.name ?: ""
+
+                    isLoading = false
+
+                    android.util.Log.d("LocationDebug",
+                        "Ubicación obtenida: $address")
+
+                }
+            } else {
+                locationName = "No se pudo obtener la ubicación"
+                isWithinRange = false
+                isLoading = false
+            }
+        }
+        // Limpieza cuando el composable se desmonte
+        onDispose {
+            service.stopLocationUpdates()
         }
     }
+
+
 
     Scaffold(
         topBar = {
@@ -163,10 +217,20 @@ fun MarcarAsistenciaScreen(
                 RegistrarButton(
                     tipoRegistro = TipoRegistro.ENTRADA,
                     actualLocation = actualLocation,
+                    ubicacionNombre = locationName,
+                    isEnabled =isWithinRange,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .height(56.dp)
+                        .height(56.dp),
+                    onRegistroGuardado = { registro ->
+                        asistenciaViewModel.agregarRegistro(registro) // Guardar en ViewModel
+                        Toast.makeText(
+                            context,
+                            "Entrada registrada correctamente",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 )
 
 
@@ -174,58 +238,97 @@ fun MarcarAsistenciaScreen(
                 RegistrarButton(
                     tipoRegistro = TipoRegistro.SALIDA,
                     actualLocation = actualLocation,
+                    ubicacionNombre = locationName,
+                    isEnabled = isWithinRange,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .height(56.dp)
+                        .height(56.dp),
+                    onRegistroGuardado = { registro ->
+                        asistenciaViewModel.agregarRegistro(registro) // guardar en ViewModel
+                        Toast.makeText(
+                            context,
+                            "Salida registrada correctamente",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 )
+
+
+
+                // Mensaje cuando no estas en el rango
+                if (!isWithinRange && !isLoading && actualLocation != null) {
+                    Text(
+                        text = "Debes estar en una ubicación permitida para marcar asistencia\n" +
+                                "Distancia a la zona más cercana: ${"%.1f".format(distanceToNearest ?: 0f)} metros",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
+                }
             }
         }
     }
 }
 
 
-
-
-
-
-
-// Mapa con OpenStreetMap (osmdroid)
 @Composable
 fun RealMapWithLocation(
     actualLocation: Location?,
-    locationName: String
+    locationName: String,
+    isLoading: Boolean = false
 ) {
     val context = LocalContext.current
 
     AndroidView(
         factory = { context ->
             MapView(context).apply {
-                // CONFIGURACIÓN PARA FORZAR CARGA DE TILES
                 setTileSource(TileSourceFactory.MAPNIK)
                 setMultiTouchControls(true)
-                setUseDataConnection(true) //
+                setUseDataConnection(true)
+                setBuiltInZoomControls(true)
+                setClickable(true)
 
-                // Configuración de cache
-                tileProvider.tileSource = TileSourceFactory.MAPNIK
+                // configuración inicial del mapa (vacía)
+                controller.setZoom(15.0)
+            }
+        },
+        update = { mapView ->
+                // Limpiar marcadores anteriores
+                mapView.overlays.clear()
 
-                val testPoint = GeoPoint(-33.350225, -70.880267)
-                controller.setZoom(17.0)
-                controller.setCenter(testPoint)
+            if (actualLocation != null) {
+                // ✅ USAR SIEMPRE la ubicación actual, no hay ubicación por defecto
+                val locationPoint = GeoPoint(actualLocation.latitude, actualLocation.longitude)
 
-                val marker = Marker(this).apply {
-                    position = testPoint
+                // ✅ CONFIGURAR la vista del mapa con la ubicación REAL
+                mapView.controller.animateTo(locationPoint)
+                mapView.controller.setZoom(17.0)
+
+                // ✅ AÑADIR marcador en la ubicación REAL
+                val marker = Marker(mapView).apply {
+                    position = locationPoint
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                    title = "Ubicación: $locationName"
+                    title = "Tu ubicación actual"
+                    snippet = locationName
                 }
-                overlays.add(marker)
-                invalidate()
+
+                mapView.overlays.add(marker)
+
+                // ✅ FORZAR actualización del mapa
+                mapView.invalidate()
+
+                // ✅ DEBUG: Log para verificar que se está actualizando
+                android.util.Log.d("MapDebug",
+                    "Mapa actualizado: ${actualLocation.latitude}," +
+                            " ${actualLocation.longitude}")
             }
         },
         modifier = Modifier.fillMaxSize()
     )
 }
-
 
 @Composable
 fun InfoRow(label: String, value: String) {

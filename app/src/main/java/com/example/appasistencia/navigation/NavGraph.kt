@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.appasistencia.model.auth.entities.User
+import com.example.appasistencia.model.auth.entities.UserPerfil
 import com.example.appasistencia.ui.screen.HistorialVacacionesScreen
 import com.example.appasistencia.ui.screen.HomeScreen
 import com.example.appasistencia.ui.screen.InicioAppScreen
@@ -15,15 +16,21 @@ import com.example.appasistencia.ui.screen.RecContraseñaScreen
 import com.example.appasistencia.ui.screen.MarcarAsistenciaScreen
 import com.example.appasistencia.ui.screen.NavegacionScreen
 import com.example.appasistencia.ui.screen.IncidenciasScreen
+import com.example.appasistencia.ui.screen.PerfilUsuarioScreen
+import com.example.appasistencia.ui.screen.RegistroAsistenciaScreen
 import com.example.appasistencia.ui.screen.SolicitudVacacionesScreen
 import com.example.appasistencia.ui.screen.VacacionesScreen
 import com.example.appasistencia.viewmodel.VacacionesViewModel
+import com.example.appasistencia.viewmodel.AsistenciaViewModel
+
 
 
 @Composable
 fun NavGraph(navController: NavHostController) {
 
     val vacacionesViewModel: VacacionesViewModel = viewModel ()
+    val asistenciaViewModel: AsistenciaViewModel = viewModel ()
+
 
     NavHost(
         navController = navController,
@@ -105,6 +112,28 @@ fun NavGraph(navController: NavHostController) {
             )
         }
 
+        // Perfil Usuario
+
+        composable(s.PerfilUsuario.route) {
+            NavigationBar(
+                actualScreen = s.PerfilUsuario.route,
+                navController = navController,
+                onNavegacionScreen = {}
+            ) {
+                PerfilUsuarioScreen(
+                    onBack = { navController.popBackStack() },
+                    user = UserPerfil(
+                        id = "1",
+                        nombre = "Juan Pérez",
+                        correo = "juan@email.com",
+                        numeroCel = "+56 9 1234 5678"
+                    )
+                )
+            }
+        }
+
+
+
         // pantalla de Home
         composable(s.Home.route) {
             // para mostrar barra de navegacion
@@ -147,10 +176,27 @@ fun NavGraph(navController: NavHostController) {
                 MarcarAsistenciaScreen(
                     onBack = {
                         navController.popBackStack() // Vuelve a la pantalla anterior (Home)
-                    }
+                    },
+                    asistenciaViewModel = asistenciaViewModel // Pasar ViewModel compartido
                 )
             }
         }
+
+        // PANTALLA DE REGISTRO ASISTENCIA
+        composable(s.RegistroAsistenciaScreen.route) {
+            NavigationBar(
+                actualScreen = s.RegistroAsistenciaScreen.route,
+                navController = navController,
+            ) {
+                RegistroAsistenciaScreen(
+                    onBack = {
+                        navController.popBackStack() // Vuelve a la pantalla anterior
+                    },
+                    asistenciaViewModel = asistenciaViewModel // Pasar ViewModel compartido
+                )
+            }
+        }
+
             //PAntalla NAvegacion
         composable(s.NavegacionScreen.route) {
             NavigationBar(
@@ -185,8 +231,7 @@ fun NavGraph(navController: NavHostController) {
 
                     onAtraso = {
                         navController.navigate("justificacion/Atraso/AT")
-                    }
-
+                    },
                 )
             }
         }

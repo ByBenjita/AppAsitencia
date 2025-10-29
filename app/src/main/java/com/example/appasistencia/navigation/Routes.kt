@@ -21,5 +21,10 @@ sealed class s(val route: String) {
 
     object HistorialVacaciones : s("historial_vacaciones")
 
+    object RegistroAsistenciaScreen : s("registro_asistencia")
+
+    object PerfilUsuario : s("perfil_usuario")
+
+
 
 }

@@ -48,7 +48,9 @@ fun BottomNavigationBar(
     onModoOscuro: () -> Unit = {},
     onTutorial: () -> Unit = {},
     onContacto: () -> Unit = {},
-    onCerrarSesion: () -> Unit = {}
+    onCerrarSesion: () -> Unit = {},
+    onPerfilUsuario: () -> Unit,
+
 ) {
     var showMenu by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
@@ -87,6 +89,22 @@ fun BottomNavigationBar(
                             bottom = 4.dp
                         )
                 )
+
+                //Perfil usuario
+
+                Text(
+                    text = "Mi Perfil",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            showMenu = false
+                            onPerfilUsuario() // Esto navega al perfil
+                        }
+                        .padding(16.dp, 12.dp)
+                )
+
+
 
                 // Opciones cliqueables del menú
                 Text(
