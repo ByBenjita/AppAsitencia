@@ -2,6 +2,7 @@ package com.example.appasistencia.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -26,7 +27,7 @@ import com.example.appasistencia.ui.screen.SolicitudVacacionesScreen
 import com.example.appasistencia.ui.screen.VacacionesScreen
 import com.example.appasistencia.viewmodel.VacacionesViewModel
 import com.example.appasistencia.viewmodel.AsistenciaViewModel
-
+import com.example.appasistencia.viewmodel.PerfilViewModel
 
 
 @Composable
@@ -37,6 +38,10 @@ fun NavGraph(navController: NavHostController) {
     val userRepository = remember { UserRepository(context) }
     val vacacionesViewModel: VacacionesViewModel = viewModel ()
     val asistenciaViewModel: AsistenciaViewModel = viewModel ()
+
+    val perfilViewModel: PerfilViewModel = viewModel()
+    val usuario = perfilViewModel.perfil.collectAsState().value
+
 
 
     // Verificar al inicio si hay usuario guardado para redirigir automáticamente
@@ -134,12 +139,7 @@ fun NavGraph(navController: NavHostController) {
             ) {
                 PerfilUsuarioScreen(
                     onBack = { navController.popBackStack() },
-                    user = UserPerfil(
-                        id = "1",
-                        nombre = "Juan Pérez",
-                        correo = "juan@email.com",
-                        numeroCel = "+56 9 1234 5678"
-                    )
+                    viewModel = perfilViewModel
                 )
             }
         }

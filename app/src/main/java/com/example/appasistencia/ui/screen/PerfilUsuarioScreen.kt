@@ -13,6 +13,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.BackHand
+import androidx.compose.material.icons.filled.Domain
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
@@ -26,27 +28,25 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.appasistencia.model.auth.entities.UserPerfil
-
-
+import com.example.appasistencia.viewmodel.PerfilViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PerfilUsuarioScreen(
     onBack: () -> Unit,
-    user: UserPerfil? = null
+    viewModel: PerfilViewModel
 ) {
-    val usuario = user ?: UserPerfil(
-        id = "1",
-        nombre = "Juan Pérez",
-        correo = "juan.perez@empresa.com",
-        numeroCel = "+56 9 1234 5678"
-    )
+
+    val usuario = viewModel.perfil.collectAsState().value
+    val isLoading = viewModel.isLoading.collectAsState().value
+    val error = viewModel.error.collectAsState().value
 
 
     Scaffold(
@@ -61,13 +61,57 @@ fun PerfilUsuarioScreen(
             )
         }
     ) { innerPadding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Header con información básica
+
+            // -------------------------
+            // ESTADO: CARGANDO
+            // -------------------------
+            if (isLoading) {
+                Text(
+                    text = "Cargando...",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(16.dp)
+                )
+                return@Column
+            }
+
+            // -------------------------
+            // ESTADO: ERROR
+            // -------------------------
+            if (error != null) {
+                Text(
+                    text = "Error: $error",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(16.dp)
+                )
+                return@Column
+            }
+
+            // -------------------------
+            // ESTADO: USUARIO NULO
+            // (esto evita crasheos)
+            // -------------------------
+            if (usuario == null) {
+                Text(
+                    text = "No se pudo cargar el usuario",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(16.dp)
+                )
+                return@Column
+            }
+
+            // -------------------------
+            // ESTADO: DATOS CARGADOS
+            // -------------------------
+
+            // Header
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -81,20 +125,14 @@ fun PerfilUsuarioScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = usuario.nombre,
+                        text = "${usuario.name}" ?: "Sin nombre",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
 
-                    Text(
-                        text = usuario.correo,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
                 }
             }
 
@@ -110,6 +148,7 @@ fun PerfilUsuarioScreen(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
+
                     Text(
                         text = "Información de Contacto",
                         style = MaterialTheme.typography.titleMedium,
@@ -117,25 +156,28 @@ fun PerfilUsuarioScreen(
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
-                    // ID de usuario
                     InfoItem(
                         icon = Icons.Default.Person,
                         label = "ID de Usuario",
-                        value = usuario.id
+                        value = "${usuario.idPerson}" ?: "N/A"
                     )
 
-                    // Email
                     InfoItem(
-                        icon = Icons.Default.Email,
-                        label = "Email",
-                        value = usuario.correo
+                        icon = Icons.Default.BackHand,
+                        label = "RUT",
+                        value = "${usuario.rut}" ?: "N/A"
                     )
 
-                    // Teléfono
                     InfoItem(
                         icon = Icons.Default.Phone,
                         label = "Teléfono",
-                        value = usuario.numeroCel
+                        value = "${usuario.phone}" ?: "N/A"
+                    )
+
+                    InfoItem(
+                        icon = Icons.Default.Domain,
+                        label = "Empresa",
+                        value = "${usuario.company}" ?: "N/A"
                     )
                 }
             }
