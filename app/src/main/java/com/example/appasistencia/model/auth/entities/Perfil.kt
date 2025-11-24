@@ -6,4 +6,11 @@ data class Perfil(
     val name: String,
     val phone: String,
     val company: String,
+    val users: List<UserBackend>
+)
+
+data class UserBackend(
+    val userId: Int,
+    val email: String,
+    val password: String
 )
