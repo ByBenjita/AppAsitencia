@@ -19,13 +19,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.appasistencia.model.auth.entities.Marcaje
+import com.example.appasistencia.model.auth.entities.MarcajeResponse
 import com.example.appasistencia.model.auth.entities.RegistroAsistencia
-import com.example.appasistencia.viewmodel.AsistenciaViewModel
+import com.example.appasistencia.viewmodel.MarcajeViewModel
 import contrexempie.appassistence.model.entities.TipoRegistro
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -34,10 +38,17 @@ import java.util.Locale
 @Composable
 fun RegistroAsistenciaScreen(
     onBack: () -> Unit,
-    asistenciaViewModel: AsistenciaViewModel = viewModel() //Recibir el  ViewModel
+    marcajeViewModel: MarcajeViewModel
 
 ) {
-    val registros = asistenciaViewModel.registros
+    val registros = marcajeViewModel.marcajes.collectAsState()
+    val loading = marcajeViewModel.isLoading.collectAsState()
+
+    // Llamar al backend al abrir la pantalla
+    LaunchedEffect(Unit) {
+        marcajeViewModel.cargarMarcajes()
+    }
+
 
 
     Scaffold(
@@ -75,7 +86,7 @@ fun RegistroAsistenciaScreen(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Total de registros: ${registros.size}",
+                        text = "Total de registros: ${registros.value.size}",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(top = 4.dp)
                     )
@@ -83,7 +94,7 @@ fun RegistroAsistenciaScreen(
             }
 
             // Lista de registros
-            if (registros.isEmpty()) {
+            if (registros.value.isEmpty()) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -108,8 +119,8 @@ fun RegistroAsistenciaScreen(
                         .fillMaxSize()
                         .padding(horizontal = 16.dp)
                 ) {
-                    items(registros){ registro ->
-                        ItemRegistro(registro = registro)
+                    items(registros.value){ registro ->
+                        ItemRegistroApi(registro = registro)
                     }
                 }
             }
@@ -117,75 +128,37 @@ fun RegistroAsistenciaScreen(
     }
 }
 
-@Composable
-fun ItemRegistro(registro: RegistroAsistencia) {
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+//Dar formato a la fecha
+fun formatoFecha(fecha: String?): String {
+    if (fecha.isNullOrEmpty()) return "-"
+    return fecha.substring(0, 10)
+}
 
+//Dar formato a la hora
+fun formatoHora(fecha: String?): String {
+    if (fecha.isNullOrEmpty() || fecha.length < 19) return "-"
+    return fecha.substring(11, 19)
+}
+
+@Composable
+fun ItemRegistroApi(registro: MarcajeResponse) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            // Fila superior: Tipo y fecha
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = registro.tipo.displayName,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = when (registro.tipo) {
-                        TipoRegistro.ENTRADA ->
-                            MaterialTheme.colorScheme.primary
-                        TipoRegistro.SALIDA ->
-                            MaterialTheme.colorScheme.secondary
-                    }
-                )
-                Text(
-                    text = dateFormat.format(registro.fecha),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            // Hora
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Hora: ${timeFormat.format(registro.fecha)}",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 4.dp)
+                text = registro.typeAttendance,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
             )
 
-            // Ubicación
-            Text(
-                text = "Ubicación: ${registro.ubicacionNombre}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 2.dp)
-            )
-
-            // Coordenadas
-            Text(
-                text = "Coordenadas: ${"%.6f".format(registro.latitud)}, ${"%.6f".format(registro.longitud)}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.padding(top = 2.dp)
-            )
-
-            // Precisión (opcional)
-            Text(
-                text = "Precisión: ${"%.1f".format(registro.precision)} metros",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.padding(top = 2.dp)
-            )
+            Text("Fecha: ${formatoFecha(registro.date)}")
+            Text("Hora: ${formatoHora(registro.hour)}")
+            Text("Ubicación: ${registro.location}")
+            Text("Lat: ${registro.latitude}, Lng: ${registro.longitude}")
         }
     }
 }

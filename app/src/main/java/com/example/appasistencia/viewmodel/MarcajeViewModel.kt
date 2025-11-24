@@ -4,6 +4,7 @@ package com.example.appasistencia.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.appasistencia.model.auth.entities.Marcaje
+import com.example.appasistencia.model.auth.entities.MarcajeResponse
 import com.example.appasistencia.repository.MarcajeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,9 @@ class MarcajeViewModel : ViewModel() {
 
     private val repository = MarcajeRepository()
 
+    private val _marcajes = MutableStateFlow<List<MarcajeResponse>>(emptyList())
+    val marcajes: StateFlow<List<MarcajeResponse>> = _marcajes
+
     private val _marcajeSuccess = MutableStateFlow<Boolean?>(null)
     val marcajeSuccess: StateFlow<Boolean?> = _marcajeSuccess
 
@@ -21,6 +25,20 @@ class MarcajeViewModel : ViewModel() {
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
+
+    fun cargarMarcajes() {
+        viewModelScope.launch {
+            try {
+                _isLoading.value = true
+                _marcajes.value = repository.getMarcajes()
+            } catch (e: Exception) {
+                _error.value = e.localizedMessage
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
 
     fun postMarcaje(marcaje: Marcaje) {
         viewModelScope.launch {
