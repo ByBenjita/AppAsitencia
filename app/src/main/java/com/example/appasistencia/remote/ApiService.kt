@@ -2,6 +2,7 @@ package com.example.appasistencia.remote
 
 
 import com.example.appasistencia.model.auth.entities.Marcaje
+import com.example.appasistencia.model.auth.entities.MarcajeResponse
 import com.example.appasistencia.model.auth.entities.Perfil
 import retrofit2.Response
 import retrofit2.http.Body
@@ -17,4 +18,8 @@ interface ApiService {
 
     @POST("api/v1/attendance")
     suspend fun postMarcaje(@Body marcaje: Marcaje): Response<Void>
+
+    @GET("api/v1/attendance")
+    suspend fun getMarcajes(): List<MarcajeResponse>
+
 }

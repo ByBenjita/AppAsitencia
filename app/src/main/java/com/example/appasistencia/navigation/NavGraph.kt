@@ -25,8 +25,8 @@ import com.example.appasistencia.ui.screen.PerfilUsuarioScreen
 import com.example.appasistencia.ui.screen.RegistroAsistenciaScreen
 import com.example.appasistencia.ui.screen.SolicitudVacacionesScreen
 import com.example.appasistencia.ui.screen.VacacionesScreen
+import com.example.appasistencia.viewmodel.MarcajeViewModel
 import com.example.appasistencia.viewmodel.VacacionesViewModel
-import com.example.appasistencia.viewmodel.AsistenciaViewModel
 import com.example.appasistencia.viewmodel.PerfilViewModel
 
 
@@ -37,8 +37,7 @@ fun NavGraph(navController: NavHostController) {
     val context = LocalContext.current
     val userRepository = remember { UserRepository(context) }
     val vacacionesViewModel: VacacionesViewModel = viewModel ()
-    val asistenciaViewModel: AsistenciaViewModel = viewModel ()
-
+    val marcajeViewModel: MarcajeViewModel = viewModel()
     val perfilViewModel: PerfilViewModel = viewModel()
     val usuario = perfilViewModel.perfil.collectAsState().value
 
@@ -188,7 +187,7 @@ fun NavGraph(navController: NavHostController) {
                     onBack = {
                         navController.popBackStack() // Vuelve a la pantalla anterior (Home)
                     },
-                    asistenciaViewModel = asistenciaViewModel // Pasar ViewModel compartido
+                    marcajeViewModel = marcajeViewModel // Pasar ViewModel compartido
                 )
             }
         }
@@ -203,7 +202,7 @@ fun NavGraph(navController: NavHostController) {
                     onBack = {
                         navController.popBackStack() // Vuelve a la pantalla anterior
                     },
-                    asistenciaViewModel = asistenciaViewModel // Pasar ViewModel compartido
+                    marcajeViewModel = marcajeViewModel // Pasar ViewModel compartido
                 )
             }
         }
