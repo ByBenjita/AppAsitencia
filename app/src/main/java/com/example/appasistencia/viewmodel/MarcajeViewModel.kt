@@ -14,8 +14,8 @@ class MarcajeViewModel : ViewModel() {
 
     private val repository = MarcajeRepository()
 
-    private val _marcajes = MutableStateFlow<List<MarcajeResponse>>(emptyList())
-    val marcajes: StateFlow<List<MarcajeResponse>> = _marcajes
+    private val _marcajes = MutableStateFlow<List<Marcaje>>(emptyList())
+    val marcajes: StateFlow<List<Marcaje>> = _marcajes
 
     private val _marcajeSuccess = MutableStateFlow<Boolean?>(null)
     val marcajeSuccess: StateFlow<Boolean?> = _marcajeSuccess

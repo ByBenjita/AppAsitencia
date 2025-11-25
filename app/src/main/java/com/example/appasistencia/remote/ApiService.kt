@@ -20,6 +20,6 @@ interface ApiService {
     suspend fun postMarcaje(@Body marcaje: Marcaje): Response<Void>
 
     @GET("api/v1/attendance")
-    suspend fun getMarcajes(): List<MarcajeResponse>
+    suspend fun getMarcajes(): List<Marcaje>
 
 }

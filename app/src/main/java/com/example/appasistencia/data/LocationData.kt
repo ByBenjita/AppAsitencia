@@ -26,9 +26,9 @@ object AllowedLocations {
         ) ,// Mi casa
 
         AllowedLocation(
-            "Petricio",
-            -33.372855,
-            -70.695435,
+            "Casa Pato",
+            -33.403560,
+            -70.684392,
             20f // 20 metros de radio
         ) //ubicacion de prueba
     )

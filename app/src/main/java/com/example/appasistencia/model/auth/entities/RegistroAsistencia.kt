@@ -13,20 +13,4 @@ data class RegistroAsistencia(
     val longitud: Double,
     val ubicacionNombre: String,
     val precision: Float
-) {
-    fun getFechaFormateada(): String {
-        return java.text.SimpleDateFormat(
-            "dd/MM/yyyy",
-            java.util.Locale
-                .getDefault())
-            .format(fecha)
-    }
-
-    fun getHoraFormateada(): String {
-        return java.text.SimpleDateFormat(
-            "HH:mm:ss",
-            java.util.Locale
-                .getDefault())
-            .format(fecha)
-    }
-}
+)
