@@ -26,5 +26,10 @@ data class LoginState(
     val contraseña: String = "",
     val correoError: String? = null,
     val contraseñaError: String? = null,
-    val rememberMe: Boolean = false
+    val rememberMe: Boolean = false,
+
+    // ------ estados necesarios para autenticación real ------
+    val isLoading: Boolean = false,
+    val loginError: String? = null,
+    val loginSuccess: Boolean = false
 )
