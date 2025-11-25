@@ -12,7 +12,7 @@ class MarcajeRepository {
         return RetrofitInstance.api.postMarcaje(marcaje)
     }
 
-    suspend fun getMarcajes(): List<MarcajeResponse> {
+    suspend fun getMarcajes(): List<Marcaje> {
         return RetrofitInstance.api.getMarcajes()
     }
 }

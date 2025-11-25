@@ -141,7 +141,7 @@ fun formatoHora(fecha: String?): String {
 }
 
 @Composable
-fun ItemRegistroApi(registro: MarcajeResponse) {
+fun ItemRegistroApi(registro: Marcaje) {
     Card(
         modifier = Modifier
             .fillMaxWidth()

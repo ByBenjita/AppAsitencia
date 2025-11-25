@@ -9,7 +9,8 @@ data class Marcaje(
     var location: String,
     var latitude: String,
     var longitude: String,
-    val user: UserBackendRequest)
+    val user: UserBackendRequest
+)
 
 data class UserBackendRequest(
     val userId: Int,
