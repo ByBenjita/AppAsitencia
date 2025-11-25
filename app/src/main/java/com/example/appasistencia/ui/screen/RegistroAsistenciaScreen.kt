@@ -131,14 +131,25 @@ fun RegistroAsistenciaScreen(
 //Dar formato a la fecha
 fun formatoFecha(fecha: String?): String {
     if (fecha.isNullOrEmpty()) return "-"
-    return fecha.substring(0, 10)
+
+    return try {
+        // intenta parsear HH:mm:ss
+        val parser = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+        val dateObj = parser.parse(fecha)
+
+        // formatea a fecha actual
+        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(dateObj!!)
+    } catch (e: Exception) {
+        "-"
+    }
 }
 
-//Dar formato a la hora
 fun formatoHora(fecha: String?): String {
-    if (fecha.isNullOrEmpty() || fecha.length < 19) return "-"
-    return fecha.substring(11, 19)
+    if (fecha.isNullOrEmpty()) return "-"
+
+    return fecha // ya viene como HH:mm:ss
 }
+
 
 @Composable
 fun ItemRegistroApi(registro: Marcaje) {
