@@ -1,8 +1,9 @@
 package com.example.appasistencia.remote
 
 
+import com.example.appasistencia.model.auth.entities.AuthRequest
+import com.example.appasistencia.model.auth.entities.AuthResponse
 import com.example.appasistencia.model.auth.entities.Marcaje
-import com.example.appasistencia.model.auth.entities.MarcajeResponse
 import com.example.appasistencia.model.auth.entities.Perfil
 import retrofit2.Response
 import retrofit2.http.Body
@@ -21,5 +22,9 @@ interface ApiService {
 
     @GET("api/v1/attendance")
     suspend fun getMarcajes(): List<Marcaje>
+
+    @POST("/api/v1/auth/login")
+    suspend fun login(@Body request: AuthRequest): Response<AuthResponse>
+
 
 }
