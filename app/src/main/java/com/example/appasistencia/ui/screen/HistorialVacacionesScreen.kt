@@ -7,11 +7,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.appasistencia.model.auth.entities.EstadoSolicitud
 import com.example.appasistencia.model.auth.entities.SolicitudVacaciones
 import com.example.appasistencia.viewmodel.VacacionesViewModel
 import androidx.compose.runtime.collectAsState
@@ -26,6 +26,11 @@ fun HistorialVacacionesScreen(
     vacacionesViewModel: VacacionesViewModel = viewModel()
 ) {
     val solicitudes by vacacionesViewModel.solicitudes.collectAsState()
+
+    // Cargar las solicitudes al iniciar
+    LaunchedEffect(Unit) {
+        vacacionesViewModel.cargarSolicitudes()
+    }
 
     Scaffold(
         topBar = {
@@ -49,50 +54,6 @@ fun HistorialVacacionesScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-
-            // Sección: Pendientes
-            val solicitudesPendientes = solicitudes.filter { it.estado == EstadoSolicitud.PENDIENTE }
-            if (solicitudesPendientes.isNotEmpty()) {
-                Text(
-                    text = "Pendientes",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
-                solicitudesPendientes.forEach { solicitud ->
-                    ItemSolicitudVacaciones(solicitud = solicitud)
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            // Línea divisoria
-            Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-            )
-
-            // Sección: Aprobadas
-            val solicitudesAprobadas = solicitudes.filter { it.estado == EstadoSolicitud.APROBADA }
-            if (solicitudesAprobadas.isNotEmpty()) {
-                Text(
-                    text = "Aprobadas",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
-                solicitudesAprobadas.forEach { solicitud ->
-                    ItemSolicitudVacaciones(solicitud = solicitud)
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-            }
-
-            // Mensaje si no hay solicitudes
             if (solicitudes.isEmpty()) {
                 Text(
                     text = "No hay solicitudes de vacaciones",
@@ -102,6 +63,12 @@ fun HistorialVacacionesScreen(
                         .padding(vertical = 32.dp),
                     textAlign = TextAlign.Center
                 )
+                return@Column
+            }
+
+            solicitudes.forEach { solicitud ->
+                ItemSolicitudVacaciones(solicitud = solicitud)
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -119,7 +86,7 @@ fun ItemSolicitudVacaciones(solicitud: SolicitudVacaciones) {
                 .padding(16.dp)
         ) {
             Text(
-                text = solicitud.titulo,
+                text = "Solicitud de vacaciones",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -127,28 +94,21 @@ fun ItemSolicitudVacaciones(solicitud: SolicitudVacaciones) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "${solicitud.fechaInicio} hasta el ${solicitud.fechaFin}",
+                text = "${formatearFecha(solicitud.dateStart)} hasta ${formatearFecha(solicitud.dateFinish)}",
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "Total de días ${solicitud.totalDias}",
+                text = "Total de días: ${solicitud.daysAvailable}",
                 style = MaterialTheme.typography.bodyMedium
-            )
-
-            // Mostrar estado
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Estado: ${solicitud.estado.name}",
-                style = MaterialTheme.typography.bodySmall,
-                color = when (solicitud.estado) {
-                    EstadoSolicitud.APROBADA -> MaterialTheme.colorScheme.primary
-                    EstadoSolicitud.PENDIENTE -> MaterialTheme.colorScheme.onSurfaceVariant
-                    EstadoSolicitud.RECHAZADA -> MaterialTheme.colorScheme.error
-                }
             )
         }
     }
+}
+
+// Función para mostrar solo la fecha
+fun formatearFecha(fecha: String): String {
+    return fecha.substring(0, 10)
 }
