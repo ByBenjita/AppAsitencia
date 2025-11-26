@@ -276,13 +276,14 @@ fun MarcarAsistenciaScreen(
                     return@RegistrarButton
                 }
 
-                val now = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Date())
+                val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                val hour = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
 
                 marcajeViewModel.postMarcaje(
                     Marcaje(
                         typeAttendance = "ENTRADA",
-                        date = now,
-                        hour = now,
+                        date = date,
+                        hour = hour,
                         location = locationName,
                         latitude = actualLocation?.latitude.toString(),
                         longitude = actualLocation?.longitude.toString(),
@@ -307,13 +308,14 @@ fun MarcarAsistenciaScreen(
                     return@RegistrarButton
                 }
 
-                val now = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Date())
+                val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                val hour = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
 
                 marcajeViewModel.postMarcaje(
                     Marcaje(
                         typeAttendance = "SALIDA",
-                        date = now,
-                        hour = now,
+                        date = date,
+                        hour = hour,
                         location = locationName,
                         latitude = actualLocation?.latitude.toString(),
                         longitude = actualLocation?.longitude.toString(),
