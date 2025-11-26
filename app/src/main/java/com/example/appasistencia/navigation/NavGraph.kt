@@ -39,8 +39,8 @@ fun NavGraph(navController: NavHostController) {
     val vacacionesViewModel: VacacionesViewModel = viewModel ()
     val marcajeViewModel: MarcajeViewModel = viewModel()
     val perfilViewModel: PerfilViewModel = viewModel()
-    val usuario = perfilViewModel.perfil.collectAsState().value
-
+    val usuarioPerfil = perfilViewModel.perfil.collectAsState().value
+    val currentUserId = usuarioPerfil?.users?.firstOrNull()?.userId ?: 0
 
 
     // Verificar al inicio si hay usuario guardado para redirigir automáticamente
@@ -274,9 +274,11 @@ fun NavGraph(navController: NavHostController) {
             ) {
                 SolicitudVacacionesScreen(
                     onBack = { navController.popBackStack() },
-                    diasDisponibles = 20, //dias disponibles
-                    vacacionesViewModel = vacacionesViewModel // Pasar el ViewModel compartido
+                    diasDisponibles = 20,
+                    currentUserId = currentUserId,
+                    vacacionesViewModel = vacacionesViewModel
                 )
+
             }
         }
 

@@ -1,33 +1,22 @@
 package com.example.appasistencia.model.auth.entities
 
-import java.text.SimpleDateFormat
-import java.util.*
+
 
 data class SolicitudVacaciones(
-    val id: Int,
-    val titulo: String,
-    val fechaInicio: String,
-    val fechaFin: String,
-    val totalDias: Int,
-    val estado: EstadoSolicitud,
-    val fechaSolicitud: String = "",
-    val tipo: TipoSolicitud = TipoSolicitud.VACACIONES
+    val daysAvailable: Int,
+    val dateStart: String,
+    val dateFinish: String,
+    val request: Request
 )
 
-enum class EstadoSolicitud {
-    PENDIENTE, APROBADA, RECHAZADA
-}
+data class Request(
+    val idRequest: Int,
+    val status: String = "PENDING",
+    val requestType: String = "VACATION",
+    val creationDate: String,
+    val user: UserData
+)
 
-enum class TipoSolicitud {
-    VACACIONES
-}
-
-// Asegúrate de que estas funciones sean públicas (sin 'private')
-fun generarIdUnico(): Int {
-    return System.currentTimeMillis().toInt()
-}
-
-fun obtenerFechaActual(): String {
-    val formato = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    return formato.format(Date())
-}
+data class UserData(
+    val userId: Int
+)
